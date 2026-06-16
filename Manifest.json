@@ -1,0 +1,9 @@
+{
+  "name": "Pickle Pants",
+  "short_name": "Pickle Pants",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4efe7",
+  "theme_color": "#1d6b5d",
+  "icons": []
+}
