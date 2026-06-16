@@ -89,9 +89,8 @@
     }
 
     .topbar {
-      position: sticky;
-      top: calc(env(safe-area-inset-top) + 8px);
-      z-index: 40;
+      position: relative;
+      z-index: 1;
       padding: 14px;
       margin-bottom: 14px;
     }
@@ -146,6 +145,15 @@
       background: var(--surface);
       font-weight: 800;
       box-shadow: 0 8px 18px rgba(0,0,0,.05);
+    }
+    .mode-dot {
+      width: 56px;
+      height: 56px;
+      min-height: 56px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.18), 0 8px 18px rgba(0,0,0,.08);
     }
 
     .settings-panel {
@@ -322,6 +330,7 @@
     @keyframes toast { 0% {opacity:0; transform:translateY(8px)} 10%,85% {opacity:1; transform:translateY(0)} 100% {opacity:0; transform:translateY(10px)} }
 
     footer { text-align: center; color: var(--muted); font-size: .86rem; padding: 8px; }
+    .note:empty, .meta:empty { display: none; }
 
     @media (max-width: 920px) {
       .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -346,7 +355,7 @@
       <div class="brand-row">
         <h1>Pickle Pants</h1>
         <div class="settings-mini">
-          <button type="button" class="settings-button" id="settingsToggle" aria-expanded="false">Settings</button>
+          <button type="button" class="settings-button mode-dot" id="settingsToggle" aria-expanded="false" aria-label="Settings"></button>
           <div class="settings-panel" id="settingsPanel" aria-label="Settings panel">
             <div class="label">Theme</div>
             <div class="theme-grid" role="group" aria-label="Theme">
@@ -357,7 +366,6 @@
           </div>
         </div>
       </div>
-      <div class="always-weight" id="currentWeightBanner">No weight saved yet. <span>Enter a weigh-in below.</span></div>
     </header>
 
     <section class="quick-grid" id="dashboard"></section>
@@ -378,11 +386,6 @@
           </div>
           <button type="button" class="btn primary" id="saveBtn">Save weight</button>
         </div>
-      </section>
-
-      <section class="card section">
-        <div class="section-head"><div><h2>Today</h2></div></div>
-        <div class="tiles" id="todayTiles"></div>
       </section>
 
       <section class="card section" id="foodShopSection">
@@ -409,11 +412,6 @@
         <div class="shop-results" id="foodShopTiles"></div>
         <p class="note" id="foodShopNote"></p>
       </section>
-
-      <details class="card" id="feedingDetails">
-        <summary><div class="summary-row"><div><h2>Feeding detail</h2></div><span class="chev"></span></div></summary>
-        <div class="details-body"><div class="tiles" id="feedingTiles"></div></div>
-      </details>
 
       <details class="card" id="supplementsDetails" open>
         <summary><div class="summary-row"><div><h2>Supplements</h2></div><span class="chev"></span></div></summary>
@@ -524,10 +522,10 @@
       ];
 
       const supplements = [
-        { id: "salmon", name: "Scottish Salmon Oil", unit: "pumps/day", calc: w => roundTo(w / 10, .5), meta: "1 pump per 10kg" },
-        { id: "pumpkin", name: "Pumpkin Powder", unit: "tsp/day", calc: w => roundTo((w / 5) * .5, .25), meta: "1/2 tsp per 5kg" },
-        { id: "mussel", name: "Green-Lipped Mussel", unit: "g/day", calc: w => roundTo((w / 10) * .5, .1), meta: "0.5g per 10kg" },
-        { id: "plaque", name: "Plaque Powder", unit: "tsp/day", calc: () => .5, meta: "Fixed daily amount" }
+        { id: "salmon", name: "Scottish Salmon Oil", unit: "pumps/day", calc: w => roundTo(w / 10, .5) },
+        { id: "pumpkin", name: "Pumpkin Powder", unit: "tsp/day", calc: w => roundTo((w / 5) * .5, .25) },
+        { id: "mussel", name: "Green-Lipped Mussel", unit: "tsp/day", calc: w => roundTo(((w / 10) * .5) * .5, .125), scoops: true },
+        { id: "plaque", name: "Plaque Powder", unit: "tsp/day", calc: () => .5 }
       ];
 
       const el = {
@@ -613,11 +611,8 @@
 
       function render() {
         const vm = viewModel();
-        renderBanner(vm);
         renderDashboard(vm);
-        renderToday(vm);
         renderFoodShop(vm);
-        renderFeeding(vm);
         renderSupplements(vm);
         renderAge(vm);
         renderAverage(vm);
@@ -628,25 +623,15 @@
         el.clearBtn.disabled = state.history.length === 0;
       }
 
-      function renderBanner(vm) {
-        if (!vm.last) {
-          el.currentWeightBanner.innerHTML = `No weight saved yet. <span>Enter a weigh-in below.</span>`;
-          return;
-        }
-        const diff = daysBetween(parseIso(vm.last.date), parseIso(vm.todayIso));
-        const dayText = diff === 0 ? "Today" : diff === 1 ? "1 day ago" : `${diff} days ago`;
-        el.currentWeightBanner.innerHTML = `${escapeHtml(dayText)} Reggie weighed ${formatKg(vm.last.weightKg)} <span>Most recent saved weight</span>`;
-      }
-
       function renderDashboard(vm) {
         const ageText = vm.validDate ? `${formatNumber(vm.weeks, 1)} weeks` : "-";
         const estText = vm.prediction.midpoint ? `${formatNumber(vm.prediction.midpoint, 1)} kg` : "-";
         const weekly = vm.velocity.latest ? `${signed(vm.velocity.latest.kgPerWeek, 2)} kg/wk` : "-";
         const weight = validWeight(vm.effectiveWeight) ? formatKg(vm.effectiveWeight) : "-";
-        const food = vm.food.gramsPerDay ? `${vm.food.gramsPerDay}g/day` : "-";
+        const food = vm.food.meals ? `${vm.food.meals} meals - ${vm.food.gramsPerMeal}g each` : "-";
         el.dashboard.innerHTML = [
-          stat("Current weight used", weight, vm.usingPrevious ? "Using last saved weight" : "Using entered weight"),
-          stat("Food today", food, vm.food.meals ? `${vm.food.meals} meals - ${vm.food.gramsPerMeal}g each` : "Waiting for weight"),
+          stat("Current weight", weight, ""),
+          stat("Food today", food, ""),
           stat("Weekly gain", weekly, vm.velocity.avgLast3 != null ? `3-interval avg ${signed(vm.velocity.avgLast3, 2)} kg/wk` : "Needs more weigh-ins"),
           stat("Adult estimate", estText, vm.prediction.confidence || "Needs weight"),
           stat("Age", ageText, vm.validDate ? ageStage(vm.months) : "Invalid date")
@@ -701,9 +686,11 @@
       function renderSupplements(vm) {
         el.suppGrid.innerHTML = supplements.map(s => {
           const value = validWeight(vm.effectiveWeight) ? s.calc(vm.effectiveWeight) : null;
+          const displayValue = value != null ? formatNumber(value, 3) : "-";
+          const scoopText = s.scoops && value != null ? `<p>${escapeHtml(formatScoopMix(value))}</p>` : "";
           return `<article class="supp-card">
-            <div><h3>${escapeHtml(s.name)}</h3><p>${escapeHtml(s.meta)}</p></div>
-            <div><div class="dose">${value != null ? formatNumber(value, 2) : "-"}</div><div class="dose-unit">${escapeHtml(s.unit)}</div></div>
+            <div><h3>${escapeHtml(s.name)}</h3></div>
+            <div><div class="dose">${displayValue}</div><div class="dose-unit">${escapeHtml(s.unit)}</div>${scoopText}</div>
           </article>`;
         }).join("");
       }
@@ -717,10 +704,10 @@
         el.ringValue.textContent = vm.validDate ? `${Math.round(growth * 100)}%` : "-";
         el.ringCaption.textContent = vm.validDate ? "Estimated growth progress" : "Invalid date";
         el.ageTiles.innerHTML = [
-          tile("Days old", vm.validDate ? vm.days : "-", "From DOB"),
-          tile("Weeks old", vm.validDate ? formatNumber(vm.weeks, 1) : "-", "Exact weeks"),
-          tile("Whole months", vm.validDate ? vm.wholeMonths : "-", "Used for feeding"),
-          tile("Stage", vm.validDate ? ageStage(vm.months) : "-", "Growth stage")
+          tile("Days old", vm.validDate ? vm.days : "-", ""),
+          tile("Weeks old", vm.validDate ? formatNumber(vm.weeks, 1) : "-", ""),
+          tile("Whole months", vm.validDate ? vm.wholeMonths : "-", ""),
+          tile("Stage", vm.validDate ? ageStage(vm.months) : "-", "")
         ].join("");
       }
 
@@ -733,7 +720,7 @@
             tile("Difference", "-", "Needs saved weight"),
             tile("Compared with average", "-", "Needs saved weight")
           ].join("");
-          el.averageNote.textContent = "The average comparison is not a body-condition diagnosis.";
+          el.averageNote.textContent = "";
           return;
         }
         const c = getAverageComparison(latest.weightKg, latest.ageDays);
@@ -744,7 +731,7 @@
           tile("Difference", `${signed(c.differenceFromAverageKg, 1)} kg`, `${direction} average`),
           tile("Compared with average", `${signed(c.percentVsAverage, 0)}%`, `${direction} blended average`)
         ].join("");
-        el.averageNote.textContent = `Reggie is ${formatNumber(Math.abs(c.differenceFromAverageKg), 1)} kg ${direction} the blended male Rottweiler average for his age. This does not automatically mean overweight; body condition should be assessed separately.`;
+        el.averageNote.textContent = "";
       }
 
       function renderPrediction(vm) {
@@ -755,7 +742,7 @@
           tile("Prediction confidence", p.confidence || "-", "Model confidence, not certainty"),
           tile("Growth progress", p.growthProgress != null ? `${formatNumber(p.growthProgress, 0)}%` : "-", "Estimated adult weight reached")
         ].join("");
-        el.predictionNote.textContent = "Adult weight prediction is based on Reggie's exact age in days, latest valid weight, previous recorded weights, and a blended male Rottweiler growth curve. The average comparison is not a body-condition diagnosis. Confidence improves as more valid weights are recorded and as Reggie gets closer to maturity.";
+        el.predictionNote.textContent = "";
       }
 
       function renderHistory(vm) {
@@ -854,6 +841,8 @@
         state.history.sort((a,b) => a.date.localeCompare(b.date));
         save(STORAGE.history, state.history);
         toast(idx >= 0 ? "Weight updated." : "Weight saved.");
+        el.weightInput.value = "";
+        el.selectedDate.value = iso(new Date());
         render();
       }
 
@@ -1166,6 +1155,29 @@
         });
       }
 
+      function formatScoopMix(tspAmount) {
+        if (!Number.isFinite(tspAmount) || tspAmount <= 0) return "-";
+        const measures = [
+          { label: "1 tbsp", tsp: 3 },
+          { label: "1/2 tbsp", tsp: 1.5 },
+          { label: "1 tsp", tsp: 1 },
+          { label: "3/4 tsp", tsp: .75 },
+          { label: "1/2 tsp", tsp: .5 },
+          { label: "1/4 tsp", tsp: .25 },
+          { label: "1/8 tsp", tsp: .125 }
+        ];
+        let remaining = roundTo(tspAmount, .125);
+        const parts = [];
+        for (const measure of measures) {
+          const count = Math.floor((remaining + 1e-9) / measure.tsp);
+          if (count > 0) {
+            parts.push(count === 1 ? measure.label : `${count} x ${measure.label}`);
+            remaining = roundTo(remaining - count * measure.tsp, .125) || 0;
+          }
+        }
+        return parts.length ? parts.join(" + ") : "Less than 1/8 tsp";
+      }
+
       function ageStage(months) {
         if (!Number.isFinite(months)) return "Stage pending";
         if (months < 2) return "Very young puppy";
@@ -1202,7 +1214,9 @@
         const resolved = pref === "system" ? (dark ? "dark" : "light") : pref;
         document.documentElement.dataset.theme = resolved;
         el.themeButtons.forEach(btn => btn.setAttribute("aria-pressed", String(btn.dataset.themeChoice === pref)));
-        el.themeColorMeta.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--theme-color").trim());
+        const styles = getComputedStyle(document.documentElement);
+        el.themeColorMeta.setAttribute("content", styles.getPropertyValue("--theme-color").trim());
+        if (el.settingsToggle) el.settingsToggle.style.background = styles.getPropertyValue("--accent").trim();
       }
 
       function init() {
@@ -1212,7 +1226,10 @@
         applyTheme(["system","light","dark"].includes(state.theme) ? state.theme : "system");
 
         el.saveBtn.addEventListener("click", saveWeight);
-        el.selectedDate.addEventListener("input", render);
+        el.selectedDate.addEventListener("input", () => {
+          el.weightInput.value = "";
+          render();
+        });
         el.weightInput.addEventListener("input", render);
         [el.rollsLeftInput, el.breakfastDone, el.lunchDone, el.dinnerDone].forEach(node => node && node.addEventListener("input", render));
         [el.breakfastDone, el.lunchDone, el.dinnerDone].forEach(node => node && node.addEventListener("change", render));
