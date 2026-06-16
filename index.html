@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pickle Pants" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="theme-color" content="#efe7da" id="themeColorMeta" />
+  <title>Pickle Pants</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4efe7;
+      --surface: rgba(255, 252, 248, .88);
+      --surface-2: rgba(255, 248, 240, .72);
+      --text: #201a16;
+      --muted: #766b5f;
+      --faint: #968a7b;
+      --line: rgba(93, 78, 58, .15);
+      --line-strong: rgba(93, 78, 58, .24);
+      --accent: #1d6b5d;
+      --accent-2: #a86b36;
+      --accent-soft: rgba(29, 107, 93, .12);
+      --danger: #b24545;
+      --warning: #b56328;
+      --ok: #2f7f5d;
+      --shadow: 0 18px 42px rgba(43, 31, 17, .10);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --font: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+      --display: "Iowan Old Style", Georgia, serif;
+      --theme-color: #efe7da;
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #151917;
+      --surface: rgba(34, 40, 36, .90);
+      --surface-2: rgba(28, 33, 30, .75);
+      --text: #f6efe6;
+      --muted: #c7bcad;
+      --faint: #9f9689;
+      --line: rgba(226, 215, 197, .12);
+      --line-strong: rgba(226, 215, 197, .22);
+      --accent: #7dd0b6;
+      --accent-2: #d6a774;
+      --accent-soft: rgba(125, 208, 182, .14);
+      --danger: #ef8e8e;
+      --warning: #dfaa63;
+      --ok: #8ae2bb;
+      --shadow: 0 20px 50px rgba(0, 0, 0, .35);
+      --theme-color: #151917;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 5% 0%, rgba(168,107,54,.16), transparent 34%),
+        radial-gradient(circle at 100% 5%, rgba(29,107,93,.14), transparent 40%),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, summary { font: inherit; }
+    button { border: 0; background: none; color: inherit; cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .45; }
+    button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+
+    .shell {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: calc(env(safe-area-inset-top) + 12px) 14px calc(env(safe-area-inset-bottom) + 56px);
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .topbar {
+      position: sticky;
+      top: calc(env(safe-area-inset-top) + 8px);
+      z-index: 40;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(2.1rem, 8vw, 3.25rem);
+      line-height: .9;
+      letter-spacing: -.04em;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+
+    h3 { margin: 0; font-size: 1rem; }
+    p { margin: 0; color: var(--muted); line-height: 1.45; }
+
+    .always-weight {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(29,107,93,.18);
+      font-weight: 800;
+    }
+
+    .always-weight span { color: var(--muted); font-weight: 650; }
+
+    .settings-mini { position: relative; flex: 0 0 auto; }
+    .settings-button, .btn, .small-btn, .seg-btn {
+      min-height: 42px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(0,0,0,.05);
+    }
+
+    .settings-panel {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 238px;
+      padding: 10px;
+      border-radius: 18px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      display: none;
+    }
+    .settings-panel.is-open { display: grid; gap: 8px; }
+    .theme-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .seg-btn { min-height: 38px; padding: 8px 10px; color: var(--muted); }
+    .seg-btn[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stat {
+      min-height: 104px;
+      padding: 14px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .label { color: var(--faint); font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 800; }
+    .value { font-size: 1.35rem; font-weight: 900; letter-spacing: -.04em; line-height: 1.05; }
+    .meta { color: var(--muted); font-size: .88rem; line-height: 1.35; }
+
+    main { display: grid; gap: 14px; }
+    .section { padding: 18px; }
+    .section-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 14px; }
+
+    .input-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+    .shop-input-card {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 2fr;
+      gap: 12px;
+      align-items: end;
+    }
+    .meal-checks {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .meal-check {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-weight: 800;
+      color: var(--text);
+    }
+    .meal-check input {
+      width: 18px;
+      min-height: 18px;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+    .shop-results {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .field { display: grid; gap: 7px; }
+    .field label { color: var(--muted); font-size: .88rem; font-weight: 800; }
+    .input-wrap {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      min-height: 52px;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .unit { color: var(--faint); font-weight: 900; }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), #14473f); color: white; border-color: transparent; }
+    html[data-theme="dark"] .btn.primary { background: linear-gradient(135deg, #58bda5, #236d5f); }
+    .btn.danger { color: var(--danger); background: rgba(178,69,69,.10); border-color: rgba(178,69,69,.20); }
+
+    details.card { padding: 0; overflow: hidden; }
+    details > summary { list-style: none; cursor: pointer; padding: 18px; }
+    details > summary::-webkit-details-marker { display: none; }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .chev { width: 11px; height: 11px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: .18s ease; flex: 0 0 auto; }
+    details[open] .chev { transform: rotate(225deg); }
+    .details-body { padding: 0 18px 18px; }
+
+    .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .tile {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      min-height: 96px;
+      display: grid;
+      gap: 8px;
+      align-content: space-between;
+    }
+
+    .supp-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .supp-card { padding: 16px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); display: grid; gap: 12px; }
+    .dose { font-size: clamp(1.8rem, 7vw, 2.4rem); font-weight: 950; letter-spacing: -.06em; line-height: .9; }
+    .dose-unit { color: var(--muted); font-weight: 850; }
+
+    .ring-panel { display: grid; grid-template-columns: 240px 1fr; gap: 18px; align-items: center; }
+    .ring-wrap { position: relative; width: min(220px, 100%); aspect-ratio: 1; margin: auto; }
+    .ring-svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+    .ring-track { fill: none; stroke: rgba(29,107,93,.13); stroke-width: 12; }
+    .ring-progress { fill: none; stroke: var(--accent); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset .3s ease; }
+    .ring-centre { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 30px; }
+    .ring-main { font-family: var(--display); font-size: 2.6rem; line-height: .92; letter-spacing: -.05em; }
+    .ring-sub { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+
+    .chart-wrap { min-height: 330px; border-radius: 22px; border: 1px solid var(--line); background: var(--surface); overflow: hidden; }
+    .chart-svg { width: 100%; height: 100%; min-height: 330px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border-radius: 999px; background: var(--accent-soft); border: 1px solid rgba(29,107,93,.14); font-weight: 750; font-size: .86rem; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+    .dot.forecast { background: var(--accent-2); }
+    .dot.zone { background: #8c8c8c; }
+
+    .history-tools { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+    .history-list { display: grid; gap: 9px; }
+    .history-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .history-date { font-weight: 900; }
+    .history-weight { font-size: 1.15rem; font-weight: 950; }
+    .history-actions { display: flex; gap: 8px; }
+    .small-btn { min-height: 36px; padding: 8px 11px; font-size: .88rem; }
+
+    .empty { padding: 28px 18px; text-align: center; color: var(--muted); line-height: 1.5; }
+    .toast-stack { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 18px); transform: translateX(-50%); width: min(92vw, 420px); display: grid; gap: 8px; z-index: 80; pointer-events: none; }
+    .toast { padding: 13px 15px; border-radius: 16px; background: rgba(30,35,32,.94); color: #fff; box-shadow: var(--shadow); animation: toast 3.1s both; }
+    @keyframes toast { 0% {opacity:0; transform:translateY(8px)} 10%,85% {opacity:1; transform:translateY(0)} 100% {opacity:0; transform:translateY(10px)} }
+
+    footer { text-align: center; color: var(--muted); font-size: .86rem; padding: 8px; }
+
+    @media (max-width: 920px) {
+      .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .quick-grid .stat:first-child { grid-column: 1 / -1; }
+      .tiles, .supp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ring-panel { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .shell { padding-left: 10px; padding-right: 10px; }
+      .brand-row { align-items: flex-start; }
+      .input-card, .shop-input-card, .shop-results, .meal-checks { grid-template-columns: 1fr; }
+      .tiles, .supp-grid, .quick-grid { grid-template-columns: 1fr; }
+      .history-row { grid-template-columns: 1fr; }
+      .history-actions { justify-content: flex-start; }
+      .settings-panel { right: -2px; width: min(88vw, 250px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar card">
+      <div class="brand-row">
+        <h1>Pickle Pants</h1>
+        <div class="settings-mini">
+          <button type="button" class="settings-button" id="settingsToggle" aria-expanded="false">Settings</button>
+          <div class="settings-panel" id="settingsPanel" aria-label="Settings panel">
+            <div class="label">Theme</div>
+            <div class="theme-grid" role="group" aria-label="Theme">
+              <button type="button" class="seg-btn" data-theme-choice="system" aria-pressed="false">System</button>
+              <button type="button" class="seg-btn" data-theme-choice="light" aria-pressed="false">Light</button>
+              <button type="button" class="seg-btn" data-theme-choice="dark" aria-pressed="false">Dark</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="always-weight" id="currentWeightBanner">No weight saved yet. <span>Enter a weigh-in below.</span></div>
+    </header>
+
+    <section class="quick-grid" id="dashboard"></section>
+
+    <main>
+      <section class="card section" id="weightSection">
+        <div class="section-head">
+          <div><h2>Update weight</h2></div>
+        </div>
+        <div class="input-card">
+          <div class="field">
+            <label for="selectedDate">Date</label>
+            <div class="input-wrap"><input id="selectedDate" type="date" /></div>
+          </div>
+          <div class="field">
+            <label for="weightInput">Weight</label>
+            <div class="input-wrap"><input id="weightInput" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 38.0" /><span class="unit">kg</span></div>
+          </div>
+          <button type="button" class="btn primary" id="saveBtn">Save weight</button>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="section-head"><div><h2>Today</h2></div></div>
+        <div class="tiles" id="todayTiles"></div>
+      </section>
+
+      <section class="card section" id="foodShopSection">
+        <div class="section-head">
+          <div>
+            <h2>Food shop planner</h2>
+            <p>Uses the selected date, rolls left, meals already eaten, payday rules, and Reggie's projected food needs.</p>
+          </div>
+        </div>
+        <div class="shop-input-card">
+          <div class="field">
+            <label for="rollsLeftInput">Meat rolls left today</label>
+            <div class="input-wrap"><input id="rollsLeftInput" type="number" inputmode="decimal" min="0" step="0.5" placeholder="e.g. 12" /><span class="unit">x 450g</span></div>
+          </div>
+          <div class="field">
+            <label>Meals Reggie has already had on the selected date</label>
+            <div class="meal-checks">
+              <label class="meal-check"><input id="breakfastDone" type="checkbox" /> Breakfast</label>
+              <label class="meal-check" id="lunchCheckWrap"><input id="lunchDone" type="checkbox" /> Lunch</label>
+              <label class="meal-check"><input id="dinnerDone" type="checkbox" /> Dinner</label>
+            </div>
+          </div>
+        </div>
+        <div class="shop-results" id="foodShopTiles"></div>
+        <p class="note" id="foodShopNote"></p>
+      </section>
+
+      <details class="card" id="feedingDetails">
+        <summary><div class="summary-row"><div><h2>Feeding detail</h2></div><span class="chev"></span></div></summary>
+        <div class="details-body"><div class="tiles" id="feedingTiles"></div></div>
+      </details>
+
+      <details class="card" id="supplementsDetails" open>
+        <summary><div class="summary-row"><div><h2>Supplements</h2></div><span class="chev"></span></div></summary>
+        <div class="details-body"><div class="supp-grid" id="suppGrid"></div></div>
+      </details>
+
+      <details class="card" id="ageDetails">
+        <summary><div class="summary-row"><div><h2>Age progress</h2></div><span class="chev"></span></div></summary>
+        <div class="details-body ring-panel">
+          <div class="ring-wrap">
+            <svg class="ring-svg" viewBox="0 0 160 160" aria-hidden="true">
+              <circle class="ring-track" cx="80" cy="80" r="60"></circle>
+              <circle class="ring-progress" id="progressRing" cx="80" cy="80" r="60" stroke-dasharray="377" stroke-dashoffset="377"></circle>
+            </svg>
+            <div class="ring-centre"><div><div class="ring-main" id="ringValue">-</div><div class="ring-sub" id="ringCaption">-</div></div></div>
+          </div>
+          <div class="tiles" id="ageTiles"></div>
+        </div>
+      </details>
+
+      <details class="card" id="averageDetails" open>
+        <summary><div class="summary-row"><div><h2>Average-weight comparison</h2></div><span class="chev"></span></div></summary>
+        <div class="details-body"><div class="tiles" id="averageTiles"></div><p class="note" id="averageNote"></p></div>
+      </details>
+
+      <details class="card" id="predictionDetails" open>
+        <summary><div class="summary-row"><div><h2>Adult weight prediction</h2></div><span class="chev"></span></div></summary>
+        <div class="details-body"><div class="tiles" id="predictionTiles"></div><p class="note" id="predictionNote"></p></div>
+      </details>
+
+      <details class="card" id="chartDetails" open>
+        <summary><div class="summary-row"><div><h2>Weight chart</h2></div><span class="chev"></span></div></summary>
+        <div class="details-body">
+          <div class="legend">
+            <span class="pill"><span class="dot"></span>Actual</span>
+            <span class="pill"><span class="dot forecast"></span>Forecast</span>
+            <span class="pill"><span class="dot zone"></span>Average male curve</span>
+          </div>
+          <div class="chart-wrap" id="chartWrap"></div>
+        </div>
+      </details>
+
+      <details class="card" id="historyDetails" open>
+        <summary><div class="summary-row"><div><h2>Weight history</h2></div><span class="chev"></span></div></summary>
+        <div class="details-body">
+          <div class="history-tools">
+            <div class="legend" id="historyTrendPills"></div>
+            <button type="button" class="btn danger" id="clearBtn">Clear history</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </div>
+      </details>
+
+      <footer>Date of birth: 08/01/2026 - Saved locally on this device</footer>
+    </main>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const DOB_ISO = "2026-01-08";
+      const MS_DAY = 86400000;
+      const ROLL_GRAMS = 450;
+      const STORAGE = {
+        history: "picklePantsReggieWeightHistoryFixedV2",
+        theme: "picklePantsTheme"
+      };
+
+      const rottweilerMaleAverageWeightCurveKg = [
+        { days: 0, avgKg: 0.45 }, { days: 7, avgKg: 0.80 }, { days: 14, avgKg: 1.20 }, { days: 21, avgKg: 1.65 },
+        { days: 28, avgKg: 2.50 }, { days: 35, avgKg: 3.50 }, { days: 42, avgKg: 4.60 }, { days: 49, avgKg: 5.30 },
+        { days: 56, avgKg: 6.30 }, { days: 63, avgKg: 7.70 }, { days: 70, avgKg: 9.20 }, { days: 77, avgKg: 11.20 },
+        { days: 84, avgKg: 13.80 }, { days: 91, avgKg: 15.00 }, { days: 98, avgKg: 16.20 }, { days: 105, avgKg: 17.70 },
+        { days: 112, avgKg: 21.90 }, { days: 119, avgKg: 23.00 }, { days: 126, avgKg: 24.20 }, { days: 133, avgKg: 25.30 },
+        { days: 140, avgKg: 26.50 }, { days: 147, avgKg: 27.20 }, { days: 154, avgKg: 27.90 }, { days: 161, avgKg: 28.70 },
+        { days: 168, avgKg: 29.60 }, { days: 175, avgKg: 30.40 }, { days: 182, avgKg: 32.70 }, { days: 189, avgKg: 33.50 },
+        { days: 196, avgKg: 34.40 }, { days: 203, avgKg: 35.40 }, { days: 210, avgKg: 36.30 }, { days: 217, avgKg: 36.80 },
+        { days: 224, avgKg: 37.30 }, { days: 231, avgKg: 37.70 }, { days: 238, avgKg: 38.00 }, { days: 245, avgKg: 38.80 },
+        { days: 252, avgKg: 39.70 }, { days: 259, avgKg: 40.50 }, { days: 266, avgKg: 41.50 }, { days: 273, avgKg: 44.10 },
+        { days: 280, avgKg: 44.60 }, { days: 287, avgKg: 45.20 }, { days: 294, avgKg: 45.80 }, { days: 301, avgKg: 46.50 },
+        { days: 304, avgKg: 46.80 }, { days: 315, avgKg: 47.20 }, { days: 329, avgKg: 47.80 }, { days: 343, avgKg: 48.50 },
+        { days: 365, avgKg: 49.50 }, { days: 392, avgKg: 50.20 }, { days: 420, avgKg: 50.90 }, { days: 456, avgKg: 51.70 },
+        { days: 487, avgKg: 52.20 }, { days: 518, avgKg: 52.60 }, { days: 548, avgKg: 52.90 }, { days: 579, avgKg: 53.20 },
+        { days: 609, avgKg: 53.40 }, { days: 640, avgKg: 53.60 }, { days: 670, avgKg: 53.70 }, { days: 700, avgKg: 53.80 },
+        { days: 730, avgKg: 54.00 }, { days: 760, avgKg: 54.10 }, { days: 790, avgKg: 54.20 }, { days: 821, avgKg: 54.30 },
+        { days: 852, avgKg: 54.40 }, { days: 883, avgKg: 54.45 }, { days: 913, avgKg: 54.50 }
+      ];
+
+      const rottweilerMaleGrowthPercentCurve = [
+        { days: 0, percent: 0.008 }, { days: 7, percent: 0.015 }, { days: 14, percent: 0.022 }, { days: 21, percent: 0.030 },
+        { days: 28, percent: 0.046 }, { days: 35, percent: 0.064 }, { days: 42, percent: 0.084 }, { days: 49, percent: 0.097 },
+        { days: 56, percent: 0.116 }, { days: 63, percent: 0.141 }, { days: 70, percent: 0.169 }, { days: 77, percent: 0.206 },
+        { days: 84, percent: 0.253 }, { days: 91, percent: 0.275 }, { days: 98, percent: 0.297 }, { days: 105, percent: 0.325 },
+        { days: 112, percent: 0.402 }, { days: 119, percent: 0.422 }, { days: 126, percent: 0.444 }, { days: 133, percent: 0.464 },
+        { days: 140, percent: 0.486 }, { days: 147, percent: 0.499 }, { days: 154, percent: 0.512 }, { days: 161, percent: 0.527 },
+        { days: 168, percent: 0.543 }, { days: 175, percent: 0.558 }, { days: 182, percent: 0.600 }, { days: 189, percent: 0.615 },
+        { days: 196, percent: 0.631 }, { days: 203, percent: 0.650 }, { days: 210, percent: 0.666 }, { days: 217, percent: 0.675 },
+        { days: 224, percent: 0.684 }, { days: 231, percent: 0.692 }, { days: 238, percent: 0.697 }, { days: 245, percent: 0.712 },
+        { days: 252, percent: 0.728 }, { days: 259, percent: 0.743 }, { days: 266, percent: 0.761 }, { days: 273, percent: 0.809 },
+        { days: 280, percent: 0.818 }, { days: 287, percent: 0.829 }, { days: 294, percent: 0.840 }, { days: 301, percent: 0.853 },
+        { days: 304, percent: 0.859 }, { days: 315, percent: 0.866 }, { days: 329, percent: 0.877 }, { days: 343, percent: 0.890 },
+        { days: 365, percent: 0.908 }, { days: 392, percent: 0.921 }, { days: 420, percent: 0.934 }, { days: 456, percent: 0.948 },
+        { days: 487, percent: 0.957 }, { days: 518, percent: 0.965 }, { days: 548, percent: 0.971 }, { days: 579, percent: 0.976 },
+        { days: 609, percent: 0.980 }, { days: 640, percent: 0.983 }, { days: 670, percent: 0.985 }, { days: 700, percent: 0.987 },
+        { days: 730, percent: 0.991 }, { days: 760, percent: 0.993 }, { days: 790, percent: 0.995 }, { days: 821, percent: 0.996 },
+        { days: 852, percent: 0.998 }, { days: 883, percent: 0.999 }, { days: 913, percent: 1.000 }
+      ];
+
+      const supplements = [
+        { id: "salmon", name: "Scottish Salmon Oil", unit: "pumps/day", calc: w => roundTo(w / 10, .5), meta: "1 pump per 10kg" },
+        { id: "pumpkin", name: "Pumpkin Powder", unit: "tsp/day", calc: w => roundTo((w / 5) * .5, .25), meta: "1/2 tsp per 5kg" },
+        { id: "mussel", name: "Green-Lipped Mussel", unit: "g/day", calc: w => roundTo((w / 10) * .5, .1), meta: "0.5g per 10kg" },
+        { id: "plaque", name: "Plaque Powder", unit: "tsp/day", calc: () => .5, meta: "Fixed daily amount" }
+      ];
+
+      const el = {
+        selectedDate: document.getElementById("selectedDate"),
+        weightInput: document.getElementById("weightInput"),
+        saveBtn: document.getElementById("saveBtn"),
+        currentWeightBanner: document.getElementById("currentWeightBanner"),
+        dashboard: document.getElementById("dashboard"),
+        todayTiles: document.getElementById("todayTiles"),
+        rollsLeftInput: document.getElementById("rollsLeftInput"),
+        breakfastDone: document.getElementById("breakfastDone"),
+        lunchDone: document.getElementById("lunchDone"),
+        dinnerDone: document.getElementById("dinnerDone"),
+        lunchCheckWrap: document.getElementById("lunchCheckWrap"),
+        foodShopTiles: document.getElementById("foodShopTiles"),
+        foodShopNote: document.getElementById("foodShopNote"),
+        feedingTiles: document.getElementById("feedingTiles"),
+        suppGrid: document.getElementById("suppGrid"),
+        progressRing: document.getElementById("progressRing"),
+        ringValue: document.getElementById("ringValue"),
+        ringCaption: document.getElementById("ringCaption"),
+        ageTiles: document.getElementById("ageTiles"),
+        averageTiles: document.getElementById("averageTiles"),
+        averageNote: document.getElementById("averageNote"),
+        predictionTiles: document.getElementById("predictionTiles"),
+        predictionNote: document.getElementById("predictionNote"),
+        chartWrap: document.getElementById("chartWrap"),
+        historyTrendPills: document.getElementById("historyTrendPills"),
+        historyList: document.getElementById("historyList"),
+        clearBtn: document.getElementById("clearBtn"),
+        settingsToggle: document.getElementById("settingsToggle"),
+        settingsPanel: document.getElementById("settingsPanel"),
+        themeButtons: Array.from(document.querySelectorAll("[data-theme-choice]")),
+        themeColorMeta: document.getElementById("themeColorMeta"),
+        toastStack: document.getElementById("toastStack")
+      };
+
+      const state = {
+        history: loadHistory(),
+        theme: load(STORAGE.theme, "system")
+      };
+
+      function loadHistory() {
+        const oldKeys = ["picklePantsReggieWeightHistoryFixedV2", "picklePantsReggieWeightHistory", "picklePantsWeightHistoryV3", "reggieRawFeedHistory"];
+        let raw = [];
+        for (const key of oldKeys) {
+          raw = load(key, []);
+          if (Array.isArray(raw) && raw.length) break;
+        }
+        if (!Array.isArray(raw)) return [];
+        const dob = parseIso(DOB_ISO);
+        return raw
+          .map(x => ({ date: typeof x.date === "string" ? x.date : "", weightKg: roundTo(Number(x.weightKg), .1), confirmed: Boolean(x.confirmed) }))
+          .filter(x => parseIso(x.date) && parseIso(x.date) >= dob && validWeight(x.weightKg))
+          .sort((a,b) => a.date.localeCompare(b.date))
+          .reduce((acc, row) => {
+            const existing = acc.findIndex(x => x.date === row.date);
+            if (existing >= 0) acc[existing] = row; else acc.push(row);
+            return acc;
+          }, []);
+      }
+
+      function viewModel() {
+        const todayIso = iso(new Date());
+        const selectedIso = el.selectedDate.value || todayIso;
+        const selectedDate = parseIso(selectedIso);
+        const dob = parseIso(DOB_ISO);
+        const validDate = Boolean(selectedDate && selectedDate >= dob);
+        const last = lastValidWeight();
+        const entered = parseWeight(el.weightInput.value);
+        const effectiveWeight = entered ?? last?.weightKg ?? null;
+        const usingPrevious = entered == null && validWeight(effectiveWeight);
+        const days = validDate ? daysBetween(dob, selectedDate) : null;
+        const weeks = days != null ? days / 7 : null;
+        const months = days != null ? days / 30.4375 : null;
+        const wholeMonths = validDate ? wholeMonthsBetween(dob, selectedDate) : null;
+        const food = calcFood(effectiveWeight, wholeMonths);
+        const prediction = calcAdultPrediction();
+        const velocity = calcVelocity(getPredictionRows());
+        const existing = state.history.find(x => x.date === selectedIso);
+        return { todayIso, selectedIso, selectedDate, validDate, last, entered, effectiveWeight, usingPrevious, days, weeks, months, wholeMonths, food, prediction, velocity, existing };
+      }
+
+      function render() {
+        const vm = viewModel();
+        renderBanner(vm);
+        renderDashboard(vm);
+        renderToday(vm);
+        renderFoodShop(vm);
+        renderFeeding(vm);
+        renderSupplements(vm);
+        renderAge(vm);
+        renderAverage(vm);
+        renderPrediction(vm);
+        renderChart(vm);
+        renderHistory(vm);
+        el.saveBtn.textContent = vm.existing ? "Update weight" : "Save weight";
+        el.clearBtn.disabled = state.history.length === 0;
+      }
+
+      function renderBanner(vm) {
+        if (!vm.last) {
+          el.currentWeightBanner.innerHTML = `No weight saved yet. <span>Enter a weigh-in below.</span>`;
+          return;
+        }
+        const diff = daysBetween(parseIso(vm.last.date), parseIso(vm.todayIso));
+        const dayText = diff === 0 ? "Today" : diff === 1 ? "1 day ago" : `${diff} days ago`;
+        el.currentWeightBanner.innerHTML = `${escapeHtml(dayText)} Reggie weighed ${formatKg(vm.last.weightKg)} <span>Most recent saved weight</span>`;
+      }
+
+      function renderDashboard(vm) {
+        const ageText = vm.validDate ? `${formatNumber(vm.weeks, 1)} weeks` : "-";
+        const estText = vm.prediction.midpoint ? `${formatNumber(vm.prediction.midpoint, 1)} kg` : "-";
+        const weekly = vm.velocity.latest ? `${signed(vm.velocity.latest.kgPerWeek, 2)} kg/wk` : "-";
+        const weight = validWeight(vm.effectiveWeight) ? formatKg(vm.effectiveWeight) : "-";
+        const food = vm.food.gramsPerDay ? `${vm.food.gramsPerDay}g/day` : "-";
+        el.dashboard.innerHTML = [
+          stat("Current weight used", weight, vm.usingPrevious ? "Using last saved weight" : "Using entered weight"),
+          stat("Food today", food, vm.food.meals ? `${vm.food.meals} meals - ${vm.food.gramsPerMeal}g each` : "Waiting for weight"),
+          stat("Weekly gain", weekly, vm.velocity.avgLast3 != null ? `3-interval avg ${signed(vm.velocity.avgLast3, 2)} kg/wk` : "Needs more weigh-ins"),
+          stat("Adult estimate", estText, vm.prediction.confidence || "Needs weight"),
+          stat("Age", ageText, vm.validDate ? ageStage(vm.months) : "Invalid date")
+        ].join("");
+      }
+
+      function renderToday(vm) {
+        el.todayTiles.innerHTML = [
+          tile("Weight used", validWeight(vm.effectiveWeight) ? formatKg(vm.effectiveWeight) : "-", vm.usingPrevious ? "No new weight entered" : "From input box"),
+          tile("Daily food", vm.food.gramsPerDay ? `${vm.food.gramsPerDay}g` : "-", vm.food.meals ? `${vm.food.meals} meals per day` : "-"),
+          tile("Per meal", vm.food.gramsPerMeal ? `${vm.food.gramsPerMeal}g` : "-", "Rounded to whole grams"),
+          tile("Latest adult estimate", vm.prediction.midpoint ? `${formatNumber(vm.prediction.midpoint, 1)} kg` : "-", vm.prediction.range || "-")
+        ].join("");
+      }
+
+      function renderFoodShop(vm) {
+        const plan = calcFoodShopPlan(vm);
+        const lunchApplies = vm.food.meals === 3;
+        if (el.lunchCheckWrap) el.lunchCheckWrap.style.display = lunchApplies ? "flex" : "none";
+        if (!lunchApplies && el.lunchDone) el.lunchDone.checked = false;
+
+        if (!plan.ready) {
+          el.foodShopTiles.innerHTML = [
+            tile("Next pay day", plan.paydayText || "-", "Adjusted for weekend/bank holiday"),
+            tile("Next shop date", plan.shopDateText || "-", "Saturday after pay day"),
+            tile("Rolls to buy", "-", plan.reason || "Needs weight and rolls left"),
+            tile("Stock position", "-", "Enter rolls left")
+          ].join("");
+          el.foodShopNote.textContent = plan.note;
+          return;
+        }
+
+        el.foodShopTiles.innerHTML = [
+          tile("Next pay day", plan.paydayText, plan.paydayAdjusted ? "Adjusted from the 21st" : "21st of the month"),
+          tile("Next shop date", plan.shopDateText, `${plan.daysCovered} day planning window`),
+          tile("Food needed", `${formatNumber(plan.neededRolls, 1)} rolls`, `${plan.neededGrams}g projected need`),
+          tile("Buy amount", `${plan.rollsToBuy} rolls`, `${formatNumber(plan.spareRollsAfterBuy, 1)} rolls spare buffer`)
+        ].join("");
+
+        el.foodShopNote.textContent = `You currently have ${formatNumber(plan.rollsLeft, 1)} rolls left. After meals already eaten today are removed, the planner estimates ${formatNumber(plan.remainingRollsAfterCurrentStock, 1)} rolls ${plan.remainingRollsAfterCurrentStock >= 0 ? "spare" : "short"} before the shop date. The buy figure is rounded up and includes a 2-roll safety buffer.`;
+      }
+
+      function renderFeeding(vm) {
+        el.feedingTiles.innerHTML = [
+          tile("Stage", vm.validDate ? ageStage(vm.months) : "-", "Age band"),
+          tile("Feeding %", vm.food.percent ? `${Math.round(vm.food.percent * 100)}%` : "-", "Based on whole months"),
+          tile("Meals", vm.food.meals || "-", vm.food.meals === 2 ? "2 meals from 6 months" : "3 meals until 6 months"),
+          tile("Daily total", vm.food.gramsPerDay ? `${vm.food.gramsPerDay}g` : "-", "Weight x feeding %")
+        ].join("");
+      }
+
+      function renderSupplements(vm) {
+        el.suppGrid.innerHTML = supplements.map(s => {
+          const value = validWeight(vm.effectiveWeight) ? s.calc(vm.effectiveWeight) : null;
+          return `<article class="supp-card">
+            <div><h3>${escapeHtml(s.name)}</h3><p>${escapeHtml(s.meta)}</p></div>
+            <div><div class="dose">${value != null ? formatNumber(value, 2) : "-"}</div><div class="dose-unit">${escapeHtml(s.unit)}</div></div>
+          </article>`;
+        }).join("");
+      }
+
+      function renderAge(vm) {
+        const latest = lastValidWeight();
+        const growth = latest ? getGrowthPercent(latest.ageDays) : (vm.validDate ? getGrowthPercent(vm.days) : 0);
+        const circumference = 2 * Math.PI * 60;
+        el.progressRing.style.strokeDasharray = String(circumference);
+        el.progressRing.style.strokeDashoffset = String(circumference * (1 - clamp(growth, 0, 1)));
+        el.ringValue.textContent = vm.validDate ? `${Math.round(growth * 100)}%` : "-";
+        el.ringCaption.textContent = vm.validDate ? "Estimated growth progress" : "Invalid date";
+        el.ageTiles.innerHTML = [
+          tile("Days old", vm.validDate ? vm.days : "-", "From DOB"),
+          tile("Weeks old", vm.validDate ? formatNumber(vm.weeks, 1) : "-", "Exact weeks"),
+          tile("Whole months", vm.validDate ? vm.wholeMonths : "-", "Used for feeding"),
+          tile("Stage", vm.validDate ? ageStage(vm.months) : "-", "Growth stage")
+        ].join("");
+      }
+
+      function renderAverage(vm) {
+        const latest = lastValidWeight();
+        if (!latest) {
+          el.averageTiles.innerHTML = [
+            tile("Average at age", "-", "Needs saved weight"),
+            tile("Reggie", "-", "Needs saved weight"),
+            tile("Difference", "-", "Needs saved weight"),
+            tile("Compared with average", "-", "Needs saved weight")
+          ].join("");
+          el.averageNote.textContent = "The average comparison is not a body-condition diagnosis.";
+          return;
+        }
+        const c = getAverageComparison(latest.weightKg, latest.ageDays);
+        const direction = c.differenceFromAverageKg >= 0 ? "above" : "below";
+        el.averageTiles.innerHTML = [
+          tile("Average at age", formatKg(c.averageKg), "Blended male Rottweiler average"),
+          tile("Reggie", formatKg(latest.weightKg), `${latest.ageDays} days old`),
+          tile("Difference", `${signed(c.differenceFromAverageKg, 1)} kg`, `${direction} average`),
+          tile("Compared with average", `${signed(c.percentVsAverage, 0)}%`, `${direction} blended average`)
+        ].join("");
+        el.averageNote.textContent = `Reggie is ${formatNumber(Math.abs(c.differenceFromAverageKg), 1)} kg ${direction} the blended male Rottweiler average for his age. This does not automatically mean overweight; body condition should be assessed separately.`;
+      }
+
+      function renderPrediction(vm) {
+        const p = vm.prediction;
+        el.predictionTiles.innerHTML = [
+          tile("Estimated adult weight", p.midpoint ? `${formatNumber(p.midpoint, 1)} kg` : "-", p.source || "Needs valid weight"),
+          tile("Likely range", p.range || "-", "Central estimate plus range"),
+          tile("Prediction confidence", p.confidence || "-", "Model confidence, not certainty"),
+          tile("Growth progress", p.growthProgress != null ? `${formatNumber(p.growthProgress, 0)}%` : "-", "Estimated adult weight reached")
+        ].join("");
+        el.predictionNote.textContent = "Adult weight prediction is based on Reggie's exact age in days, latest valid weight, previous recorded weights, and a blended male Rottweiler growth curve. The average comparison is not a body-condition diagnosis. Confidence improves as more valid weights are recorded and as Reggie gets closer to maturity.";
+      }
+
+      function renderHistory(vm) {
+        const rows = [...getValidatedRows()].sort((a,b) => b.date.localeCompare(a.date));
+        const trendPills = [];
+        if (vm.velocity.latest) trendPills.push(`<span class="pill">Weekly ${signed(vm.velocity.latest.kgPerWeek, 2)} kg/wk</span>`);
+        if (vm.velocity.monthly) trendPills.push(`<span class="pill">Monthly ${signed(vm.velocity.monthly.kgPerMonth, 2)} kg/month</span>`);
+        if (vm.velocity.allTime) trendPills.push(`<span class="pill">All time ${signed(vm.velocity.allTime.kgPerWeek, 2)} kg/wk</span>`);
+        if (!trendPills.length) trendPills.push(`<span class="pill">Save two weights to unlock trends</span>`);
+        el.historyTrendPills.innerHTML = trendPills.join("");
+
+        if (!rows.length) {
+          el.historyList.innerHTML = `<div class="empty">No saved weights yet.</div>`;
+          return;
+        }
+
+        el.historyList.innerHTML = rows.map(row => {
+          const flag = row.anomaly && !row.confirmed ? `<div class="meta" style="color:var(--warning);font-weight:800;">Excluded from prediction - ${escapeHtml(row.anomalyReason)}</div>` : "";
+          const confirm = row.anomaly && !row.confirmed ? `<button type="button" class="small-btn" data-action="confirm" data-date="${row.date}">Confirm</button>` : "";
+          return `<article class="history-row">
+            <div><div class="history-date">${escapeHtml(formatDate(parseIso(row.date)))}</div>${flag}</div>
+            <div class="history-weight">${formatKg(row.weightKg)}</div>
+            <div class="history-actions">
+              ${confirm}
+              <button type="button" class="small-btn" data-action="edit" data-date="${row.date}">Edit</button>
+              <button type="button" class="small-btn danger" data-action="delete" data-date="${row.date}">Delete</button>
+            </div>
+          </article>`;
+        }).join("");
+      }
+
+      function renderChart(vm) {
+        const hist = getPredictionRows().map(x => ({ date: parseIso(x.date), iso: x.date, weight: x.weightKg, ageDays: x.ageDays })).filter(x => x.date);
+        if (!hist.length) {
+          el.chartWrap.innerHTML = `<div class="empty">No chart yet. Save a weight to start the trend.</div>`;
+          return;
+        }
+
+        const prediction = calcAdultPrediction();
+        const forecast = makeForecast(hist, prediction.midpoint);
+        const allDates = hist.concat(forecast).map(x => x.date.getTime());
+        let minTime = Math.min(...allDates), maxTime = Math.max(...allDates);
+        if (minTime === maxTime) { minTime -= 7 * MS_DAY; maxTime += 21 * MS_DAY; }
+        const span = Math.max(maxTime - minTime, 28 * MS_DAY);
+        minTime -= span * .06; maxTime += span * .06;
+
+        const averageLine = Array.from({ length: 30 }, (_, idx) => {
+          const t = minTime + ((maxTime - minTime) * idx / 29);
+          const ageDays = daysBetween(parseIso(DOB_ISO), new Date(t));
+          return { time: t, weight: getAverageWeightKg(ageDays) };
+        });
+
+        const weights = hist.map(x => x.weight).concat(forecast.map(x => x.weight), averageLine.map(z => z.weight));
+        let minW = Math.min(...weights), maxW = Math.max(...weights);
+        if (minW === maxW) { minW = Math.max(0, minW - 2); maxW += 2; }
+        const chartPad = Math.max(1.5, (maxW - minW) * .16);
+        minW = Math.max(0, minW - chartPad); maxW += chartPad;
+
+        const W = 900, H = 340, padBox = { top: 24, right: 18, bottom: 48, left: 58 };
+        const plotW = W - padBox.left - padBox.right;
+        const plotH = H - padBox.top - padBox.bottom;
+        const x = t => padBox.left + ((t - minTime) / (maxTime - minTime || 1)) * plotW;
+        const y = kg => padBox.top + (1 - ((kg - minW) / (maxW - minW || 1))) * plotH;
+        const line = pts => pts.length ? `M ${pts[0][0]} ${pts[0][1]} ` + pts.slice(1).map(p => `L ${p[0]} ${p[1]}`).join(" ") : "";
+        const actualPts = hist.map(p => [x(p.date.getTime()), y(p.weight)]);
+        const forecastPts = forecast.length ? [[x(hist[hist.length-1].date.getTime()), y(hist[hist.length-1].weight)]].concat(forecast.map(p => [x(p.date.getTime()), y(p.weight)])) : [];
+        const avgPts = averageLine.map(p => [x(p.time), y(p.weight)]);
+        const yTicks = makeTicks(minW, maxW, 4);
+        const xTicks = makeTicks(minTime, maxTime, 4).map(t => ({ time: t, label: new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short" }).format(new Date(t)) }));
+
+        el.chartWrap.innerHTML = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Weight history chart">
+          <rect width="${W}" height="${H}" fill="transparent"></rect>
+          ${yTicks.map(v => `<g><line x1="${padBox.left}" x2="${W-padBox.right}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${padBox.left-9}" y="${y(v)+4}" text-anchor="end" fill="var(--faint)" font-size="12">${formatNumber(v,1)}</text></g>`).join("")}
+          ${xTicks.map(t => `<text x="${x(t.time)}" y="${H-16}" text-anchor="middle" fill="var(--faint)" font-size="12">${escapeHtml(t.label)}</text>`).join("")}
+          <line x1="${padBox.left}" x2="${padBox.left}" y1="${padBox.top}" y2="${H-padBox.bottom}" stroke="var(--line-strong)"/>
+          <line x1="${padBox.left}" x2="${W-padBox.right}" y1="${H-padBox.bottom}" y2="${H-padBox.bottom}" stroke="var(--line-strong)"/>
+          <path d="${line(avgPts)}" fill="none" stroke="#8c8c8c" stroke-width="3" stroke-dasharray="8 8" stroke-linecap="round" stroke-linejoin="round"/>
+          ${actualPts.length > 1 ? `<path d="${line(actualPts)}" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
+          ${forecastPts.length > 1 ? `<path d="${line(forecastPts)}" fill="none" stroke="var(--accent-2)" stroke-width="3" stroke-dasharray="9 8" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
+          ${actualPts.map((p, idx) => `<circle cx="${p[0]}" cy="${p[1]}" r="${idx === actualPts.length-1 ? 6.5 : 5}" fill="var(--surface)" stroke="var(--accent)" stroke-width="3"/>`).join("")}
+          ${forecastPts.slice(1).map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="var(--surface)" stroke="var(--accent-2)" stroke-width="2.5"/>`).join("")}
+        </svg>`;
+      }
+
+      function saveWeight() {
+        const selectedIso = el.selectedDate.value;
+        const selectedDate = parseIso(selectedIso);
+        const dob = parseIso(DOB_ISO);
+        const w = parseWeight(el.weightInput.value);
+        if (!selectedDate || selectedDate < dob) return toast("Date cannot be before Reggie's date of birth.");
+        if (!validWeight(w)) return toast("Enter a valid weight first.");
+        const existing = state.history.find(x => x.date === selectedIso);
+        const row = { date: selectedIso, weightKg: roundTo(w, .1), confirmed: existing ? Boolean(existing.confirmed) : false };
+        const idx = state.history.findIndex(x => x.date === selectedIso);
+        if (idx >= 0) state.history[idx] = row; else state.history.push(row);
+        state.history.sort((a,b) => a.date.localeCompare(b.date));
+        save(STORAGE.history, state.history);
+        toast(idx >= 0 ? "Weight updated." : "Weight saved.");
+        render();
+      }
+
+      function getValidatedRows() {
+        const dob = parseIso(DOB_ISO);
+        const rows = state.history
+          .map(x => ({ date: x.date, weightKg: Number(x.weightKg), confirmed: Boolean(x.confirmed) }))
+          .filter(x => parseIso(x.date) && parseIso(x.date) >= dob && validWeight(x.weightKg))
+          .sort((a,b) => a.date.localeCompare(b.date))
+          .map(x => ({ ...x, ageDays: daysBetween(dob, parseIso(x.date)), anomaly: false, anomalyReason: "", includeInPrediction: true }));
+
+        for (let i = 1; i < rows.length; i++) {
+          const prev = rows[i - 1];
+          const curr = rows[i];
+          const d = daysBetween(parseIso(prev.date), parseIso(curr.date));
+          if (d > 0 && d <= 7) {
+            const pct = ((curr.weightKg - prev.weightKg) / prev.weightKg) * 100;
+            if (pct > 20 && !curr.confirmed) {
+              curr.anomaly = true;
+              curr.anomalyReason = `rise of ${formatNumber(pct, 1)}% in ${d} days`;
+              curr.includeInPrediction = false;
+            }
+            if (pct < -8 && !curr.confirmed) {
+              curr.anomaly = true;
+              curr.anomalyReason = `drop of ${formatNumber(Math.abs(pct), 1)}% in ${d} days`;
+              curr.includeInPrediction = false;
+            }
+          }
+        }
+        return rows;
+      }
+
+      function getPredictionRows() {
+        return getValidatedRows().filter(x => x.includeInPrediction);
+      }
+
+      function lastValidWeight() {
+        return getPredictionRows().at(-1) || null;
+      }
+
+      function getInterpolatedValue(curve, ageDays, valueKey) {
+        if (!Number.isFinite(ageDays)) return null;
+        if (ageDays <= curve[0].days) return curve[0][valueKey];
+        if (ageDays >= curve[curve.length - 1].days) return curve[curve.length - 1][valueKey];
+        for (let i = 0; i < curve.length - 1; i++) {
+          const lower = curve[i], upper = curve[i + 1];
+          if (ageDays >= lower.days && ageDays <= upper.days) {
+            const ratio = (ageDays - lower.days) / (upper.days - lower.days || 1);
+            return lower[valueKey] + ratio * (upper[valueKey] - lower[valueKey]);
+          }
+        }
+        return curve[curve.length - 1][valueKey];
+      }
+
+      function getAverageWeightKg(ageDays) {
+        return getInterpolatedValue(rottweilerMaleAverageWeightCurveKg, ageDays, "avgKg");
+      }
+
+      function getGrowthPercent(ageDays) {
+        return getInterpolatedValue(rottweilerMaleGrowthPercentCurve, ageDays, "percent");
+      }
+
+      function estimateAdultWeightKg(weightKg, ageDays) {
+        const gp = getGrowthPercent(ageDays);
+        return gp > 0 ? weightKg / gp : null;
+      }
+
+      function estimateProjectedWeightKg(adultWeightKg, targetAgeDays) {
+        return adultWeightKg * getGrowthPercent(targetAgeDays);
+      }
+
+      function estimateAdultWeightRangeKg(adultWeightKg, growthPercent, validWeightCount, dateSpanDays) {
+        const remainingGrowth = 1 - growthPercent;
+        let lowMargin = 0.015 + (remainingGrowth * 0.18);
+        let highMargin = 0.015 + (remainingGrowth * 0.14);
+        if (validWeightCount >= 5 && dateSpanDays >= 56) {
+          lowMargin -= 0.015;
+          highMargin -= 0.010;
+        }
+        lowMargin = Math.max(0.015, lowMargin);
+        highMargin = Math.max(0.015, highMargin);
+        return { low: adultWeightKg * (1 - lowMargin), high: adultWeightKg * (1 + highMargin) };
+      }
+
+      function estimatePredictionConfidence(growthPercent, validWeightCount, dateSpanDays, latestWeightAgeDays, hasRecentAnomaly, latestDateIso) {
+        let score = 25 + (70 * Math.pow(growthPercent, 1.15));
+        if (validWeightCount >= 5 && dateSpanDays >= 56) score += 5;
+        else if (validWeightCount >= 3 && dateSpanDays >= 28) score += 3;
+
+        const recent = getPredictionRows().slice(-3);
+        if (recent.length === 3 && recent[2].weightKg > recent[1].weightKg && recent[1].weightKg > recent[0].weightKg) score += 3;
+        if (validWeightCount === 1) score -= 10;
+        if (validWeightCount === 2) score -= 5;
+        const daysOld = latestDateIso ? daysBetween(parseIso(latestDateIso), parseIso(iso(new Date()))) : 0;
+        if (daysOld > 60) score -= 10;
+        else if (daysOld > 30) score -= 5;
+        if (hasRecentAnomaly) score -= 5;
+
+        let max = 95;
+        if (latestWeightAgeDays >= 548 && latestWeightAgeDays < 913) max = 98;
+        if (latestWeightAgeDays >= 913) max = 100;
+        return clamp(score, 20, max);
+      }
+
+      function confidenceLabel(score) {
+        if (score >= 100) return "Final adult weight";
+        if (score >= 97) return "Near final";
+        if (score >= 90) return "High";
+        if (score >= 80) return "Good";
+        if (score >= 70) return "Moderate to good";
+        if (score >= 60) return "Moderate";
+        if (score >= 45) return "Low to moderate";
+        if (score >= 30) return "Low";
+        return "Very low";
+      }
+
+      function getAverageComparison(weightKg, ageDays) {
+        const averageKg = getAverageWeightKg(ageDays);
+        const differenceFromAverageKg = weightKg - averageKg;
+        const percentVsAverage = ((weightKg - averageKg) / averageKg) * 100;
+        return { averageKg, differenceFromAverageKg, percentVsAverage };
+      }
+
+      function calcAdultPrediction() {
+        const rows = getPredictionRows();
+        if (!rows.length) return { low: null, high: null, midpoint: null, confidence: "", percentOfMidpoint: null, range: "", source: "", growthProgress: null };
+        const latest = rows.at(-1);
+        const latestGrowthPercent = getGrowthPercent(latest.ageDays);
+        const usable = rows.slice(-5);
+        const dateSpanDays = usable.length >= 2 ? daysBetween(parseIso(usable[0].date), parseIso(usable.at(-1).date)) : 0;
+        let adultEstimate;
+        if (usable.length >= 3) {
+          const recent = [...usable].reverse();
+          const weights = [0.45, 0.25, 0.15, 0.10, 0.05];
+          let weightedTotal = 0, weightTotal = 0;
+          recent.forEach((row, idx) => {
+            const adult = estimateAdultWeightKg(row.weightKg, row.ageDays);
+            const w = weights[idx] || 0;
+            if (Number.isFinite(adult) && w > 0) {
+              weightedTotal += adult * w;
+              weightTotal += w;
+            }
+          });
+          adultEstimate = weightedTotal / weightTotal;
+        } else {
+          adultEstimate = estimateAdultWeightKg(latest.weightKg, latest.ageDays);
+        }
+
+        const range = estimateAdultWeightRangeKg(adultEstimate, latestGrowthPercent, rows.length, dateSpanDays);
+        const hasRecentAnomaly = getValidatedRows().slice(-5).some(x => x.anomaly && !x.confirmed);
+        const confidenceScore = estimatePredictionConfidence(latestGrowthPercent, rows.length, dateSpanDays, latest.ageDays, hasRecentAnomaly, latest.date);
+        const confidence = `${confidenceLabel(confidenceScore)}, ${Math.round(confidenceScore)}%`;
+        return {
+          low: range.low,
+          high: range.high,
+          midpoint: adultEstimate,
+          confidence,
+          percentOfMidpoint: Math.round((latest.weightKg / adultEstimate) * 100),
+          range: `${formatNumber(range.low,1)} to ${formatNumber(range.high,1)} kg`,
+          source: usable.length >= 3 ? "Weighted from recent valid weights" : "Based on latest valid weight",
+          growthProgress: latestGrowthPercent * 100
+        };
+      }
+
+      function calcFoodShopPlan(vm) {
+        const baseDate = vm.selectedDate;
+        const baseIso = vm.selectedIso;
+        const dob = parseIso(DOB_ISO);
+        const payday = baseDate ? nextPaydayOnOrAfter(baseDate) : null;
+        const shopDate = payday ? nextSaturdayAfter(payday.actualDate) : null;
+        const rollsLeft = Number.parseFloat(el.rollsLeftInput?.value || "");
+        const prediction = calcAdultPrediction();
+        const adultEstimate = prediction.midpoint;
+        const common = {
+          ready: false,
+          paydayText: payday ? formatDate(payday.actualDate) : "-",
+          shopDateText: shopDate ? formatDate(shopDate) : "-",
+          paydayAdjusted: payday ? payday.adjusted : false,
+          note: "Enter Reggie's current weight/date and how many 450g meat rolls are left.",
+          reason: "Needs weight and rolls left"
+        };
+        if (!baseDate || !shopDate || !Number.isFinite(rollsLeft) || rollsLeft < 0 || !adultEstimate) return common;
+
+        let neededGrams = 0;
+        let daysCovered = 0;
+        const dateCursor = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), 12, 0, 0, 0);
+        while (dateCursor <= shopDate) {
+          const ageDays = daysBetween(dob, dateCursor);
+          const projectedWeight = estimateProjectedWeightKg(adultEstimate, ageDays);
+          const food = calcFood(projectedWeight, wholeMonthsBetween(dob, dateCursor));
+          if (food.gramsPerDay) {
+            if (iso(dateCursor) === baseIso) {
+              const mealsTotal = food.meals || 2;
+              const eaten = (el.breakfastDone?.checked ? 1 : 0) + ((mealsTotal === 3 && el.lunchDone?.checked) ? 1 : 0) + (el.dinnerDone?.checked ? 1 : 0);
+              const remainingMeals = clamp(mealsTotal - eaten, 0, mealsTotal);
+              neededGrams += Math.round(food.gramsPerMeal * remainingMeals);
+            } else {
+              neededGrams += food.gramsPerDay;
+            }
+            daysCovered += 1;
+          }
+          dateCursor.setDate(dateCursor.getDate() + 1);
+        }
+        const neededRolls = neededGrams / ROLL_GRAMS;
+        const shortageRolls = Math.max(0, neededRolls - rollsLeft);
+        const safetyBufferRolls = 2;
+        const rollsToBuy = Math.ceil(shortageRolls + safetyBufferRolls);
+        return {
+          ready: true,
+          paydayText: formatDate(payday.actualDate),
+          shopDateText: formatDate(shopDate),
+          paydayAdjusted: payday.adjusted,
+          rollsLeft,
+          neededGrams,
+          neededRolls,
+          rollsToBuy,
+          spareRollsAfterBuy: rollsLeft + rollsToBuy - neededRolls,
+          remainingRollsAfterCurrentStock: rollsLeft - neededRolls,
+          daysCovered
+        };
+      }
+
+      function nextPaydayOnOrAfter(fromDate) {
+        for (let offset = 0; offset < 18; offset++) {
+          const candidateMonth = new Date(fromDate.getFullYear(), fromDate.getMonth() + offset, 21, 12, 0, 0, 0);
+          const actualDate = adjustPaydayForWeekendOrBankHoliday(candidateMonth);
+          if (actualDate >= new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0, 0)) {
+            return { actualDate, adjusted: iso(actualDate) !== iso(candidateMonth) };
+          }
+        }
+        return null;
+      }
+
+      function adjustPaydayForWeekendOrBankHoliday(date) {
+        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
+        while (isWeekend(d) || isEnglandWalesBankHoliday(d)) d.setDate(d.getDate() - 1);
+        return d;
+      }
+
+      function nextSaturdayAfter(date) {
+        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
+        const daysUntilSaturday = (6 - d.getDay() + 7) % 7;
+        d.setDate(d.getDate() + daysUntilSaturday);
+        return d;
+      }
+
+      function isWeekend(date) { return date.getDay() === 0 || date.getDay() === 6; }
+      function isEnglandWalesBankHoliday(date) { return getEnglandWalesBankHolidaySet(date.getFullYear()).has(iso(date)); }
+      function getEnglandWalesBankHolidaySet(year) {
+        const dates = new Set();
+        const add = d => dates.add(iso(d));
+        add(substituteIfWeekend(new Date(year, 0, 1, 12)));
+        const easter = easterSunday(year);
+        add(addDays(easter, -2));
+        add(addDays(easter, 1));
+        add(nthWeekdayOfMonth(year, 4, 1, 1));
+        add(lastWeekdayOfMonth(year, 4, 1));
+        add(lastWeekdayOfMonth(year, 7, 1));
+        const christmas = new Date(year, 11, 25, 12);
+        const boxing = new Date(year, 11, 26, 12);
+        if (christmas.getDay() === 6 || christmas.getDay() === 0) { add(new Date(year, 11, 27, 12)); add(new Date(year, 11, 28, 12)); }
+        else if (boxing.getDay() === 6) { add(christmas); add(new Date(year, 11, 28, 12)); }
+        else if (boxing.getDay() === 0) { add(christmas); add(new Date(year, 11, 27, 12)); }
+        else { add(christmas); add(boxing); }
+        return dates;
+      }
+      function substituteIfWeekend(date) { const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12); if (d.getDay() === 6) d.setDate(d.getDate() + 2); else if (d.getDay() === 0) d.setDate(d.getDate() + 1); return d; }
+      function nthWeekdayOfMonth(year, monthIndex, weekday, n) { const d = new Date(year, monthIndex, 1, 12); while (d.getDay() !== weekday) d.setDate(d.getDate() + 1); d.setDate(d.getDate() + ((n - 1) * 7)); return d; }
+      function lastWeekdayOfMonth(year, monthIndex, weekday) { const d = new Date(year, monthIndex + 1, 0, 12); while (d.getDay() !== weekday) d.setDate(d.getDate() - 1); return d; }
+      function easterSunday(year) { const a=year%19,b=Math.floor(year/100),c=year%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),month=Math.floor((h+l-7*m+114)/31)-1,day=((h+l-7*m+114)%31)+1; return new Date(year, month, day, 12); }
+
+      function calcFood(weight, monthsWhole) {
+        if (!validWeight(weight) || monthsWhole == null) return { percent: null, gramsPerDay: null, meals: null, gramsPerMeal: null };
+        const percent = monthsWhole < 2 ? .10 : monthsWhole < 3 ? .09 : monthsWhole < 4 ? .08 : monthsWhole < 6 ? .06 : monthsWhole < 9 ? .04 : monthsWhole < 12 ? .03 : .02;
+        const gramsPerDay = Math.round(weight * 1000 * percent);
+        const meals = monthsWhole < 6 ? 3 : 2;
+        return { percent, gramsPerDay, meals, gramsPerMeal: Math.round(gramsPerDay / meals) };
+      }
+
+      function calcVelocity(history) {
+        const asc = [...history].sort((a,b) => a.date.localeCompare(b.date));
+        if (asc.length < 2) return { intervals: [], latest: null, avgLast3: null, monthly: null, allTime: null };
+        const intervals = [];
+        for (let i = 1; i < asc.length; i++) {
+          const prev = asc[i-1], next = asc[i];
+          const d = daysBetween(parseIso(prev.date), parseIso(next.date));
+          if (d <= 0) continue;
+          intervals.push({ from: prev.date, to: next.date, days: d, deltaKg: next.weightKg - prev.weightKg, kgPerWeek: ((next.weightKg - prev.weightKg) / d) * 7 });
+        }
+        const latest = intervals.at(-1) || null;
+        const last3 = intervals.slice(-3);
+        const avgLast3 = last3.length >= 3 ? last3.reduce((s,x) => s + x.kgPerWeek, 0) / last3.length : null;
+        const latestRow = asc.at(-1), monthBackDate = addDays(parseIso(latestRow.date), -30);
+        const monthBase = [...asc].reverse().find(x => parseIso(x.date) <= monthBackDate) || asc[0];
+        const monthlyDays = daysBetween(parseIso(monthBase.date), parseIso(latestRow.date));
+        const monthly = monthlyDays > 0 ? { kgPerMonth: ((latestRow.weightKg - monthBase.weightKg) / monthlyDays) * 30.4375 } : null;
+        const allDays = daysBetween(parseIso(asc[0].date), parseIso(latestRow.date));
+        const allTime = allDays > 0 ? { kgPerWeek: ((latestRow.weightKg - asc[0].weightKg) / allDays) * 7 } : null;
+        return { intervals, latest, avgLast3, monthly, allTime };
+      }
+
+      function makeForecast(hist, adultEstimate) {
+        if (!hist.length || !adultEstimate) return [];
+        const last = hist.at(-1);
+        return Array.from({ length: 4 }, (_, idx) => {
+          const weeks = idx + 1;
+          const d = addDays(last.date, weeks * 7);
+          const ageDays = daysBetween(parseIso(DOB_ISO), d);
+          return { date: d, weight: roundTo(estimateProjectedWeightKg(adultEstimate, ageDays), .1) };
+        });
+      }
+
+      function ageStage(months) {
+        if (!Number.isFinite(months)) return "Stage pending";
+        if (months < 2) return "Very young puppy";
+        if (months < 6) return "Young puppy";
+        if (months < 9) return "Growing puppy";
+        if (months < 12) return "Older puppy";
+        return "Young adult";
+      }
+
+      function stat(label, value, meta) { return `<div class="stat"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(value)}</div><div class="meta">${escapeHtml(meta)}</div></div>`; }
+      function tile(label, value, meta) { return `<div class="tile"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(value)}</div><div class="meta">${escapeHtml(meta)}</div></div>`; }
+      function parseIso(s) { if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return null; const [y,m,d] = s.split("-").map(Number); const date = new Date(y,m-1,d,12); return date.getFullYear() === y && date.getMonth() === m-1 && date.getDate() === d ? date : null; }
+      function iso(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+      function dayOnly(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+      function daysBetween(a,b) { return Math.max(0, Math.floor((dayOnly(b)-dayOnly(a))/MS_DAY)); }
+      function wholeMonthsBetween(a,b) { let m = 12*(b.getFullYear()-a.getFullYear()) + (b.getMonth()-a.getMonth()); if (b.getDate() < a.getDate()) m -= 1; return Math.max(0,m); }
+      function addDays(d, days) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()+days, 12); }
+      function parseWeight(v) { const n = Number.parseFloat(v); return validWeight(n) ? roundTo(n, .1) : null; }
+      function validWeight(v) { return Number.isFinite(v) && v > 0; }
+      function roundTo(v, step) { return Number.isFinite(v) && Number.isFinite(step) && step > 0 ? Math.round(v/step)*step : null; }
+      function clamp(v,min,max) { return Math.min(max, Math.max(min, v)); }
+      function makeTicks(min,max,count) { const arr = []; for (let i=0;i<=count;i++) arr.push(min + ((max-min)*i/count)); return arr; }
+      function formatNumber(v, dp=1) { if (!Number.isFinite(Number(v))) return "-"; return Number(v).toFixed(dp).replace(/\.0+$/, "").replace(/(\.\d*[1-9])0+$/, "$1"); }
+      function formatKg(v) { return `${formatNumber(v,1)} kg`; }
+      function signed(v, dp=1) { if (!Number.isFinite(v)) return "-"; return `${v > 0 ? "+" : v < 0 ? "-" : ""}${formatNumber(Math.abs(v), dp)}`; }
+      function formatDate(d) { return d ? new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }).format(d) : "-"; }
+      function escapeHtml(v) { return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+      function load(key, fallback) { try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } }
+      function save(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
+      function toast(text) { const t = document.createElement("div"); t.className = "toast"; t.textContent = text; el.toastStack.appendChild(t); setTimeout(() => t.remove(), 3200); }
+
+      function applyTheme(pref) {
+        const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const resolved = pref === "system" ? (dark ? "dark" : "light") : pref;
+        document.documentElement.dataset.theme = resolved;
+        el.themeButtons.forEach(btn => btn.setAttribute("aria-pressed", String(btn.dataset.themeChoice === pref)));
+        el.themeColorMeta.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--theme-color").trim());
+      }
+
+      function init() {
+        el.selectedDate.min = DOB_ISO;
+        el.selectedDate.value = iso(new Date());
+        save(STORAGE.history, state.history);
+        applyTheme(["system","light","dark"].includes(state.theme) ? state.theme : "system");
+
+        el.saveBtn.addEventListener("click", saveWeight);
+        el.selectedDate.addEventListener("input", render);
+        el.weightInput.addEventListener("input", render);
+        [el.rollsLeftInput, el.breakfastDone, el.lunchDone, el.dinnerDone].forEach(node => node && node.addEventListener("input", render));
+        [el.breakfastDone, el.lunchDone, el.dinnerDone].forEach(node => node && node.addEventListener("change", render));
+
+        el.historyList.addEventListener("click", e => {
+          const btn = e.target.closest("[data-action]");
+          if (!btn) return;
+          const date = btn.dataset.date;
+          const row = state.history.find(x => x.date === date);
+          if (!row) return;
+          if (btn.dataset.action === "edit") {
+            el.selectedDate.value = row.date;
+            el.weightInput.value = formatNumber(row.weightKg,1);
+            document.getElementById("weightSection").scrollIntoView({ behavior: "smooth", block: "start" });
+            render();
+          }
+          if (btn.dataset.action === "delete") {
+            if (!confirm(`Delete weight for ${formatDate(parseIso(row.date))}?`)) return;
+            state.history = state.history.filter(x => x.date !== row.date);
+            save(STORAGE.history, state.history);
+            toast("Weight deleted.");
+            render();
+          }
+          if (btn.dataset.action === "confirm") {
+            row.confirmed = true;
+            save(STORAGE.history, state.history);
+            toast("Weight confirmed and included.");
+            render();
+          }
+        });
+        el.clearBtn.addEventListener("click", () => {
+          if (!state.history.length) return;
+          if (!confirm("Clear all saved weights from this device?")) return;
+          state.history = [];
+          save(STORAGE.history, state.history);
+          toast("History cleared.");
+          render();
+        });
+        el.settingsToggle.addEventListener("click", () => {
+          const isOpen = el.settingsPanel.classList.toggle("is-open");
+          el.settingsToggle.setAttribute("aria-expanded", String(isOpen));
+        });
+        document.addEventListener("click", e => {
+          if (!e.target.closest(".settings-mini")) {
+            el.settingsPanel.classList.remove("is-open");
+            el.settingsToggle.setAttribute("aria-expanded", "false");
+          }
+        });
+        el.themeButtons.forEach(btn => btn.addEventListener("click", () => {
+          state.theme = btn.dataset.themeChoice;
+          save(STORAGE.theme, state.theme);
+          applyTheme(state.theme);
+        }));
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        if (mq.addEventListener) mq.addEventListener("change", () => { if (state.theme === "system") applyTheme("system"); });
+        render();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
