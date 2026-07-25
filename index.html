@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en-GB" data-theme="system">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#173f38" id="themeColorMeta" />
+  <meta name="description" content="Pickle Pants — Reggie’s private, offline-first growth tracker." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pickle Pants" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>Pickle Pants</title>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5H15v-6H9v6H3.5a.5.5 0 0 1-.5-.5Z"/><path d="M8 21v-7h8v7"/></symbol>
+    <symbol id="i-growth" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="m7 15 4-5 3 3 5-7"/><path d="M16 6h3v3"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24"><path d="M4 4v7a3 3 0 0 0 3 3h1V4M6 4v10M8 4v10M7 14v6"/><path d="M15 4v8a3 3 0 0 0 3 3h1V4c-2.5 0-4 2-4 4.5V12M18 15v5"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/><path d="M7.5 15h9"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="M8 10a4 4 0 0 1 8 0M12 10l2-2"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 10h18"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4Z"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.3L4 9"/><path d="M4 4v5h5M12 8v5l3 2"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0Z"/><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v4M8 21h8M9 17h6"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1A8 8 0 0 0 14.8 6L14.5 3h-5L9.2 6a8 8 0 0 0-1.7 1.1l-2.4-1-2 3.4L5.1 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.4-1A8 8 0 0 0 9.2 18l.3 3h5l.3-3a8 8 0 0 0 1.7-1.1l2.4 1 2-3.4-2-1.5a7 7 0 0 0 .1-1Z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 21h16"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m4 16-.8 4.8L8 20l11-11-4-4Z"/><path d="m13 7 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-theme" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c-5 2-11-3-9-9Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19Z"/><path d="M12 9v5M12 17h.01"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <button class="brand" type="button" data-route="home" aria-label="Open home">
+        <span class="brand-mark">PP</span>
+        <span class="brand-copy"><strong>Pickle Pants</strong><small>Reggie’s tracker</small></span>
+      </button>
+      <nav class="side-nav" id="desktopNav">
+        <button class="nav-button is-active" data-route="home" type="button"><svg><use href="#i-home"/></svg><span>Home</span></button>
+        <button class="nav-button" data-route="growth" type="button"><svg><use href="#i-growth"/></svg><span>Growth</span></button>
+        <button class="nav-button" data-route="feeding" type="button"><svg><use href="#i-food"/></svg><span>Feeding</span></button>
+        <button class="nav-button" data-route="forecast" type="button"><svg><use href="#i-flask"/></svg><span>Forecast Lab</span></button>
+        <button class="nav-button" data-route="more" type="button"><svg><use href="#i-more"/></svg><span>More</span></button>
+      </nav>
+      <button class="add-weight-side" id="desktopAddWeight" type="button"><svg><use href="#i-plus"/></svg><span>Add weight</span></button>
+      <div class="connection-state"><span class="connection-dot" id="connectionDot"></span><span id="connectionText">Offline-ready</span></div>
+    </aside>
+
+    <section class="main-column">
+      <header class="topbar">
+        <div class="top-title">
+          <p class="eyebrow" id="pageEyebrow">Pickle Pants</p>
+          <h1 id="pageTitle">Home</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="themeButton" type="button" aria-label="Change theme"><svg><use href="#i-theme"/></svg></button>
+          <button class="button primary desktop-only" id="topAddWeight" type="button"><svg><use href="#i-plus"/></svg>Add weight</button>
+        </div>
+      </header>
+
+      <div class="update-banner is-hidden" id="updateBanner">
+        <span>A newer version of Pickle Pants is ready.</span>
+        <button class="text-button" id="applyUpdateButton" type="button">Update now</button>
+      </div>
+
+      <main class="screen-host" id="app" tabindex="-1"></main>
+    </section>
+
+    <nav class="bottom-nav" id="mobileNav" aria-label="Primary navigation">
+      <button class="bottom-button is-active" data-route="home" type="button"><svg><use href="#i-home"/></svg><small>Home</small></button>
+      <button class="bottom-button" data-route="growth" type="button"><svg><use href="#i-growth"/></svg><small>Growth</small></button>
+      <button class="bottom-add" id="mobileAddWeight" type="button" aria-label="Add weight"><svg><use href="#i-plus"/></svg></button>
+      <button class="bottom-button" data-route="feeding" type="button"><svg><use href="#i-food"/></svg><small>Feeding</small></button>
+      <button class="bottom-button" data-route="more" type="button"><svg><use href="#i-more"/></svg><small>More</small></button>
+    </nav>
+  </div>
+
+  <dialog class="sheet" id="weightSheet" aria-labelledby="weightSheetTitle">
+    <form method="dialog" id="weightForm" novalidate>
+      <div class="sheet-grabber" aria-hidden="true"></div>
+      <header class="sheet-head">
+        <div><p class="eyebrow">Weight log</p><h2 id="weightSheetTitle">Add weight</h2></div>
+        <button class="icon-button" value="cancel" type="submit" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+      </header>
+      <div class="sheet-body">
+        <input id="entryId" type="hidden" />
+        <div class="weight-input-wrap">
+          <input id="entryWeight" type="number" inputmode="decimal" min="0.1" max="150" step="0.1" placeholder="0.0" aria-label="Weight in kilograms" required />
+          <span>kg</span>
+        </div>
+        <div class="live-comparison" id="liveComparison">Enter Reggie’s weight.</div>
+        <div class="form-grid two">
+          <label class="field"><span>Date</span><input id="entryDate" type="date" required /></label>
+          <label class="field"><span>Note <small>optional</small></span><input id="entryNotes" type="text" maxlength="500" placeholder="e.g. weighed after dinner" /></label>
+        </div>
+        <label class="check-card"><input id="entryExclude" type="checkbox" /><span><strong>Exclude from forecasts</strong><small>Keep the reading visible but do not use it in calculations.</small></span></label>
+        <div class="issue-stack" id="entryIssues"></div>
+      </div>
+      <footer class="sheet-actions">
+        <button class="button ghost" value="cancel" type="submit">Cancel</button>
+        <button class="button primary grow" id="saveWeightButton" value="default" type="submit">Save weight</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="feedingProfileDialog" aria-labelledby="feedingProfileTitle">
+    <form method="dialog" id="feedingProfileForm">
+      <header class="modal-head"><div><p class="eyebrow">Two meals every day</p><h2 id="feedingProfileTitle">Feeding percentage profile</h2></div><button class="icon-button" value="cancel" type="submit"><svg><use href="#i-close"/></svg></button></header>
+      <div class="modal-body">
+        <p class="supporting-copy">Set the percentage of current bodyweight used for each age band. Pickle Pants always splits the result equally across two meals.</p>
+        <div class="feeding-band-editor" id="feedingBandEditor"></div>
+      </div>
+      <footer class="modal-actions"><button class="button ghost" value="cancel" type="submit">Cancel</button><button class="button primary" value="default" type="submit">Save profile</button></footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal wide" id="supplementDialog" aria-labelledby="supplementDialogTitle">
+    <form method="dialog" id="supplementForm">
+      <header class="modal-head"><div><p class="eyebrow">Calibrated spoon dosing</p><h2 id="supplementDialogTitle">Supplement</h2></div><button class="icon-button" value="cancel" type="submit"><svg><use href="#i-close"/></svg></button></header>
+      <div class="modal-body">
+        <input id="supplementId" type="hidden" />
+        <div class="form-grid two">
+          <label class="field"><span>Supplement name</span><input id="supplementName" type="text" maxlength="80" required /></label>
+          <label class="field"><span>Dose rule</span><select id="supplementRule"><option value="fixed">Fixed grams per day</option><option value="perKg">Grams per kg</option><option value="per5Kg">Grams per 5 kg</option><option value="per10Kg">Grams per 10 kg</option></select></label>
+        </div>
+        <div class="form-grid two">
+          <label class="field"><span>Label amount in grams</span><input id="supplementAmount" type="number" inputmode="decimal" min="0" step="0.001" required /></label>
+          <label class="field"><span>Maximum grams per day <small>optional</small></span><input id="supplementMaximum" type="number" inputmode="decimal" min="0" step="0.001" /></label>
+        </div>
+        <section class="calibration-panel">
+          <div class="section-heading"><div><h3>Teaspoon calibration</h3><p>Weigh 10 level teaspoons three times. Enter each total below.</p></div><span class="status-badge" id="calibrationQuality">Missing</span></div>
+          <div class="form-grid three">
+            <label class="field"><span>Trial 1 total (g)</span><input id="calibrationTrial1" type="number" inputmode="decimal" min="0" step="0.01" /></label>
+            <label class="field"><span>Trial 2 total (g)</span><input id="calibrationTrial2" type="number" inputmode="decimal" min="0" step="0.01" /></label>
+            <label class="field"><span>Trial 3 total (g)</span><input id="calibrationTrial3" type="number" inputmode="decimal" min="0" step="0.01" /></label>
+          </div>
+          <div class="calibration-result" id="calibrationResult">Enter calibration trials to calculate grams per teaspoon.</div>
+        </section>
+        <div class="form-grid two">
+          <label class="field"><span>Give with</span><select id="supplementTiming"><option value="morning">Morning meal</option><option value="evening">Evening meal</option><option value="split">Split equally across both meals</option></select></label>
+          <label class="field"><span>Manufacturer notes</span><input id="supplementNotes" type="text" maxlength="400" placeholder="Copy the label instruction" /></label>
+        </div>
+        <label class="check-card"><input id="supplementEnabled" type="checkbox" checked /><span><strong>Active supplement</strong><small>Include it in the current daily plan.</small></span></label>
+      </div>
+      <footer class="modal-actions split"><button class="button danger ghost" id="deleteSupplementButton" type="button">Delete</button><div><button class="button ghost" value="cancel" type="submit">Cancel</button><button class="button primary" value="default" type="submit">Save supplement</button></div></footer>
+    </form>
+  </dialog>
+
+
+  <dialog class="modal" id="homeEditDialog" aria-labelledby="homeEditTitle">
+    <form method="dialog" id="homeEditForm">
+      <header class="modal-head"><div><p class="eyebrow">Dashboard</p><h2 id="homeEditTitle">Edit Home</h2></div><button class="icon-button" value="cancel" type="submit"><svg><use href="#i-close"/></svg></button></header>
+      <div class="modal-body"><p class="supporting-copy">Choose which insight cards appear and control their swipe order.</p><div class="home-card-editor" id="homeCardEditor"></div></div>
+      <footer class="modal-actions"><button class="button ghost" value="cancel" type="submit">Cancel</button><button class="button primary" value="default" type="submit">Save Home</button></footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="confirmDialog" aria-labelledby="confirmTitle">
+    <form method="dialog" id="confirmForm"><header class="modal-head"><div><p class="eyebrow">Confirmation</p><h2 id="confirmTitle">Are you sure?</h2></div></header><div class="modal-body"><p id="confirmMessage"></p></div><footer class="modal-actions"><button class="button ghost" value="cancel" type="submit">Cancel</button><button class="button danger" id="confirmAction" value="default" type="submit">Confirm</button></footer></form>
+  </dialog>
+
+  <input id="importFile" type="file" accept="application/json,.json" hidden />
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
