@@ -32,7 +32,7 @@ import {
   withAges
 } from "./engine.js";
 
-const APP_VERSION = "6.0.0";
+const APP_VERSION = "6.1.0";
 const STORAGE_KEY = "picklePants.v6";
 const PREVIOUS_STORAGE_KEYS = ["picklePants.v5"];
 const LEGACY_HISTORY_KEYS = [
