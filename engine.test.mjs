@@ -9,7 +9,7 @@ import {
   supplementCalibration,
   supplementPlan,
   withAges
-} from "../engine.js";
+} from "./engine.js";
 
 const profile = {
   dob: "2026-01-08",
