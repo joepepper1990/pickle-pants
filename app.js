@@ -1,3 +1,4 @@
+import { cloudStatus, captureAuthRedirect, signUp as cloudSignUp, signIn as cloudSignIn, signOut as cloudSignOut, pushCloudState, pullCloudState } from "./cloud.js";
 import {
   APP_SCHEMA_VERSION,
   DEFAULT_DOB,
@@ -32,7 +33,7 @@ import {
   withAges
 } from "./engine.js";
 
-const APP_VERSION = "6.0.0";
+const APP_VERSION = "6.1.0";
 const STORAGE_KEY = "picklePants.v6";
 const PREVIOUS_STORAGE_KEYS = ["picklePants.v5"];
 const LEGACY_HISTORY_KEYS = [
@@ -167,6 +168,9 @@ let chartInteraction = { tooltip: null };
 let analyticsCache = { key: null, value: null };
 let weightSheetForecast = null;
 let homeEditDraft = null;
+let cloudPushTimer = null;
+let cloudPushInFlight = false;
+let lastCloudSyncAt = localStorage.getItem("picklePants.lastCloudSyncAt") || "";
 
 function supplementTemplate(name) {
   return {
@@ -353,6 +357,24 @@ function restoreSnapshot(id) {
 function saveState() {
   state.schemaVersion = APP_SCHEMA_VERSION;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  scheduleCloudPush();
+}
+
+function scheduleCloudPush() {
+  if (!navigator.onLine || !cloudStatus().signedIn || cloudPushInFlight) return;
+  clearTimeout(cloudPushTimer);
+  cloudPushTimer = setTimeout(async () => {
+    cloudPushInFlight = true;
+    try {
+      lastCloudSyncAt = await pushCloudState(state, APP_SCHEMA_VERSION, APP_VERSION);
+      localStorage.setItem("picklePants.lastCloudSyncAt", lastCloudSyncAt);
+      updateConnectionState();
+    } catch (error) {
+      console.warn("Cloud sync failed", error);
+    } finally {
+      cloudPushInFlight = false;
+    }
+  }, 1200);
 }
 
 function analytics() {
@@ -407,6 +429,13 @@ function init() {
   updateConnectionState();
   registerServiceWorker();
   saveState();
+  captureAuthRedirect().then(captured => {
+    if (!captured) return;
+    toast("Cloud sign-in complete.");
+    updateConnectionState();
+    scheduleCloudPush();
+    if (state.ui.route === "data") render();
+  }).catch(error => console.warn("Cloud auth redirect failed", error));
 }
 
 function bindGlobalEvents() {
@@ -473,6 +502,11 @@ function handleAction(action, element) {
     case "import-json": dom.importFile.click(); break;
     case "calendar": downloadCalendar(); break;
     case "save-profile": saveProfileFromScreen(); break;
+    case "cloud-signup": handleCloudSignUp(); break;
+    case "cloud-signin": handleCloudSignIn(); break;
+    case "cloud-signout": handleCloudSignOut(); break;
+    case "cloud-push": handleCloudPush(); break;
+    case "cloud-pull": handleCloudPull(); break;
     case "restore-snapshot": restoreSnapshot(element.dataset.id); break;
     case "clear-data": requestConfirmation("Clear all Pickle Pants data", "This permanently removes weights, supplements, settings and forecast history from this browser.", clearAllData, "Clear everything"); break;
     case "chart-point": showChartTooltip(element, Number(element.dataset.index)); break;
@@ -946,7 +980,36 @@ function renderMilestones(data) {
 }
 
 function renderDataSettings(data) {
+  const cloud = cloudStatus();
+  const cloudSyncLabel = lastCloudSyncAt ? formatDate(new Date(lastCloudSyncAt), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Not yet synced";
+  const cloudPanel = cloud.signedIn
+    ? `<article class="card card-pad cloud-card">
+        <div class="card-head"><div class="card-title"><h3>Cloud sync</h3><p>Signed in as ${escapeHtml(cloud.email || "your account")}. Local data remains available offline.</p></div><span class="status-badge good">Connected</span></div>
+        <div class="result-list">
+          <div class="comparison-row"><span>Last successful upload</span><strong>${escapeHtml(cloudSyncLabel)}</strong></div>
+          <div class="comparison-row"><span>Storage</span><strong>Supabase · London</strong></div>
+        </div>
+        <div class="data-actions" style="margin-top:14px">
+          <button class="button primary" data-action="cloud-push" type="button">Upload now</button>
+          <button class="button ghost" data-action="cloud-pull" type="button">Restore from cloud</button>
+          <button class="button ghost" data-action="cloud-signout" type="button">Sign out</button>
+        </div>
+      </article>`
+    : `<article class="card card-pad cloud-card">
+        <div class="card-head"><div class="card-title"><h3>Cloud sync</h3><p>Optional. Sign in to back up this app state and use the same data on another device.</p></div><span class="status-badge">Local only</span></div>
+        <div class="form-grid two">
+          <label class="field"><span>Email</span><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com" /></label>
+          <label class="field"><span>Password</span><input id="cloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" /></label>
+        </div>
+        <div class="data-actions" style="margin-top:14px">
+          <button class="button primary" data-action="cloud-signin" type="button">Sign in</button>
+          <button class="button ghost" data-action="cloud-signup" type="button">Create account</button>
+        </div>
+        <p style="margin:12px 0 0;font-size:.82rem">If Supabase asks you to confirm your email, confirm it, return here and sign in.</p>
+      </article>`;
+
   dom.app.innerHTML = `<section class="screen page-grid">
+    ${cloudPanel}
     <div class="grid-equal">
       <article class="card card-pad"><div class="card-head"><div class="card-title"><h3>Reggie’s profile</h3><p>Core settings used throughout the app.</p></div></div><div class="form-grid two"><label class="field"><span>Name</span><input id="profileName" type="text" maxlength="50" value="${escapeHtml(state.profile.name)}" /></label><label class="field"><span>Date of birth</span><input id="profileDob" type="date" value="${escapeHtml(state.profile.dob)}" /></label><label class="field"><span>Reference adult weight</span><input id="profileReference" type="number" min="20" max="100" step="0.5" value="${escapeHtml(state.profile.referenceAdultKg)}" /></label><label class="field"><span>Meals per day</span><input value="2 — fixed" disabled /></label></div><button class="button primary" data-action="save-profile" type="button" style="margin-top:14px">Save profile</button></article>
       <article class="card card-pad"><div class="card-head"><div class="card-title"><h3>Data ownership</h3><p>Everything remains in this browser unless you export it.</p></div></div><div class="data-actions"><button class="button ghost" data-action="export-json" type="button"><svg><use href="#i-download"/></svg>Full JSON backup</button><button class="button ghost" data-action="import-json" type="button"><svg><use href="#i-upload"/></svg>Restore JSON</button><button class="button ghost" data-action="export-csv" type="button"><svg><use href="#i-download"/></svg>Weight CSV</button><button class="button ghost" data-action="calendar" type="button"><svg><use href="#i-calendar"/></svg>Next weigh-in</button></div></article>
@@ -1275,6 +1338,98 @@ function saveProfileFromScreen() {
   render();
 }
 
+async function handleCloudSignUp() {
+  const email = document.getElementById("cloudEmail")?.value.trim();
+  const password = document.getElementById("cloudPassword")?.value || "";
+  if (!email || password.length < 8) { toast("Enter an email and a password of at least 8 characters."); return; }
+  try {
+    const result = await cloudSignUp(email, password);
+    if (result.signedIn) {
+      toast("Cloud account created and signed in.");
+      await handleCloudPush(false);
+    } else {
+      toast("Account created. Confirm the email, then sign in.");
+    }
+    updateConnectionState();
+    render();
+  } catch (error) {
+    toast(`Cloud account: ${error.message}`);
+  }
+}
+
+async function handleCloudSignIn() {
+  const email = document.getElementById("cloudEmail")?.value.trim();
+  const password = document.getElementById("cloudPassword")?.value || "";
+  if (!email || !password) { toast("Enter your email and password."); return; }
+  try {
+    await cloudSignIn(email, password);
+    toast("Signed in to cloud sync.");
+    updateConnectionState();
+    await handleCloudPush(false);
+    render();
+  } catch (error) {
+    toast(`Sign in: ${error.message}`);
+  }
+}
+
+async function handleCloudSignOut() {
+  try {
+    await cloudSignOut();
+    toast("Cloud sync signed out. Local data is unchanged.");
+  } catch (error) {
+    toast(`Sign out: ${error.message}`);
+  }
+  updateConnectionState();
+  render();
+}
+
+async function handleCloudPush(showToast = true) {
+  if (!navigator.onLine) { if (showToast) toast("You are offline."); return; }
+  try {
+    cloudPushInFlight = true;
+    lastCloudSyncAt = await pushCloudState(state, APP_SCHEMA_VERSION, APP_VERSION);
+    localStorage.setItem("picklePants.lastCloudSyncAt", lastCloudSyncAt);
+    if (showToast) toast("Cloud backup updated.");
+    updateConnectionState();
+    if (state.ui.route === "data") render();
+  } catch (error) {
+    if (showToast) toast(`Cloud upload: ${error.message}`);
+  } finally {
+    cloudPushInFlight = false;
+  }
+}
+
+async function handleCloudPull() {
+  if (!navigator.onLine) { toast("You are offline."); return; }
+  try {
+    const remote = await pullCloudState();
+    if (!remote?.payload) { toast("No cloud backup exists yet."); return; }
+    requestConfirmation(
+      "Restore from cloud",
+      "Replace this browser's current Pickle Pants data with the latest cloud copy? A local safety snapshot will be created first.",
+      () => {
+        createSnapshot("before cloud restore");
+        const safetySnapshots = state.snapshots;
+        state = mergeState(structuredClone(DEFAULT_STATE), remote.payload);
+        state.snapshots = [...(state.snapshots || []), ...safetySnapshots].slice(-30);
+        state.schemaVersion = APP_SCHEMA_VERSION;
+        state.entries = normaliseEntries(state.entries, state.profile.dob || DEFAULT_DOB);
+        state.profile.feedingBands = normaliseFeedingBands(state.profile.feedingBands);
+        state.supplements = normaliseSupplements(state.supplements);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        lastCloudSyncAt = remote.updated_at || remote.client_updated_at || new Date().toISOString();
+        localStorage.setItem("picklePants.lastCloudSyncAt", lastCloudSyncAt);
+        applyTheme(state.profile.theme);
+        toast("Cloud backup restored.");
+        render();
+      },
+      "Restore"
+    );
+  } catch (error) {
+    toast(`Cloud restore: ${error.message}`);
+  }
+}
+
 function exportJson() {
   downloadBlob(`pickle-pants-backup-${iso(todayDate())}.json`, JSON.stringify({ exportedAt: new Date().toISOString(), appVersion: APP_VERSION, ...state }, null, 2), "application/json");
   toast("JSON backup downloaded.");
@@ -1354,8 +1509,13 @@ function applyTheme(preference) {
 
 function updateConnectionState() {
   const online = navigator.onLine;
+  const cloud = cloudStatus();
   dom.connectionDot.classList.toggle("is-offline", !online);
-  dom.connectionText.textContent = online ? "Online · offline-ready" : "Offline mode";
+  dom.connectionText.textContent = !online
+    ? "Offline mode"
+    : cloud.signedIn
+      ? "Online · cloud sync active"
+      : "Online · offline-ready";
 }
 
 async function registerServiceWorker() {

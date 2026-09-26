@@ -1,10 +1,10 @@
 {
   "name": "pickle-pants",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/engine.test.mjs",
-    "check": "node --check app.js && node --check engine.js && node --check service-worker.js && node --test tests/engine.test.mjs"
+    "test": "node --test engine.test.mjs",
+    "check": "node --check app.js && node --check cloud.js && node --check engine.js && node --check service-worker.js && node --test engine.test.mjs"
   }
 }
