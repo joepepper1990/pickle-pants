@@ -1,4 +1,4 @@
-const VERSION = "pickle-pants-v6.0.0";
+const VERSION = "pickle-pants-v6.1.0";
 const APP_SHELL = [
   "./",
   "./index.html",
